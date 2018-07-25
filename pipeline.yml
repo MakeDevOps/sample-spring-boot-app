@@ -1,0 +1,38 @@
+---
+resources:
+  - name: deploy-to-dev
+    type: cf
+    source:
+      api: https://api.local.pcfdev.io
+      username: user
+      password: pass
+      organization: pcfdev-org
+      space: pcfdev-space
+      skip_cert_check: true
+  - name: sample-repo
+    type: git
+    source:
+      uri: https://github.com/MakeDevOps/sample-spring-boot-app.git
+      branch: master
+
+jobs:
+  - name: job-build-project
+    public: true
+    plan:
+      - get: sample-repo
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: pierrevincent/gradle-java8}
+          inputs:
+            - name: sample-repo
+          outputs:
+            - name: artifacts
+          run:
+            path: ./sample-repo/ci/build.sh
+      - put: deploy-to-dev
+        params:
+          manifest: ./sample-repo/manifest.yml
+          path: ./artifacts/*.jar

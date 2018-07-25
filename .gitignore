@@ -1,0 +1,15 @@
+.gradle
+.idea
+.classpath
+.project
+.settings
+.springBeans
+
+application.properties
+out/
+build
+bin
+.rest-shell.log
+spring-shell.log
+gradle.properties
+/target/
